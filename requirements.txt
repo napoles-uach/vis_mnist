@@ -1,5 +1,5 @@
 streamlit
-tensorflow==2.10.0  # O la versión más reciente que prefieras usar
+tensorflow
 seaborn
 matplotlib
 scikit-learn
