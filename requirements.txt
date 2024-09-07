@@ -1,0 +1,6 @@
+streamlit
+tensorflow==2.10.0  # O la versión más reciente que prefieras usar
+seaborn
+matplotlib
+scikit-learn
+plotly
