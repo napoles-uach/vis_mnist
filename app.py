@@ -90,7 +90,7 @@ def show_random_images():
         
         # Mostrar la imagen en la cuadrícula
         ax.imshow(random_image, cmap='gray')
-        ax.set_title(f'index:{random_label}')
+        ax.set_title(f'index:{random_label}', fontsize=8)
         ax.axis('off')  # Ocultar los ejes
     
     # Ajustar el espaciado entre los subgráficos
