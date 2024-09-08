@@ -36,11 +36,16 @@ def entrenar_modelo(num_epochs):
 
     # Entrenar el modelo
     history = model.fit(x_train, y_train, epochs=num_epochs, verbose=0)
-    return model, history
+    
+    # Crear modelos intermedios para obtener activaciones de capas internas
+    layer_outputs = [layer.output for layer in model.layers]
+    activation_model = tf.keras.models.Model(inputs=model.input, outputs=layer_outputs)
+    
+    return model, activation_model, history
 
 # Entrenar el modelo solo si cambian los parámetros
 st.write(f"Entrenando el modelo con {num_epochs} épocas...")
-model, history = entrenar_modelo(num_epochs)
+model, activation_model, history = entrenar_modelo(num_epochs)
 
 # Visualizar la precisión del modelo
 st.header('Precisión del Modelo')
@@ -56,32 +61,32 @@ st.header('Visualización de Activaciones de Capas Internas')
 index = st.sidebar.slider('Selecciona un índice de imagen para ver activaciones', 0, len(x_test)-1, 0)
 selected_image = np.expand_dims(x_test[index], axis=0)
 
-# Realizar una predicción en la imagen seleccionada (inicializar el modelo)
-_ = model.predict(selected_image)
-
 # Función para obtener activaciones de capas
-def get_activations(model, layer_name, input_data):
-    intermediate_layer_model = tf.keras.models.Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
-    return intermediate_layer_model.predict(input_data)
+def get_activations(activation_model, input_data):
+    return activation_model.predict(input_data)
 
 # Mostrar la imagen seleccionada
 st.image(x_test[index], caption=f'Imagen del dígito: {y_test[index]}', width=150)
 
 # Obtener y visualizar las activaciones de la capa seleccionada
 layer_name = "Hidden_Layer_1" if layer_selection == "Capa 1" else ("Hidden_Layer_2" if layer_selection == "Capa 2" else "Output_Layer")
-activations = get_activations(model, layer_name, selected_image)
+activations = get_activations(activation_model, selected_image)
+
+# Seleccionar la capa correcta
+layer_index = 1 if layer_selection == "Capa 1" else (2 if layer_selection == "Capa 2" else 3)
+activation = activations[layer_index]
 
 st.write(f"Activaciones de la {layer_selection}")
-if len(activations.shape) == 2:  # Si es una capa densa
+if len(activation.shape) == 2:  # Si es una capa densa
     fig, ax = plt.subplots()
-    sns.heatmap(activations, cmap="viridis", ax=ax)
+    sns.heatmap(activation, cmap="viridis", ax=ax)
     ax.set_title(f"Activaciones de la {layer_selection}")
     st.pyplot(fig)
 else:  # Para futuras capas convolucionales
-    num_filters = activations.shape[-1]
+    num_filters = activation.shape[-1]
     fig, axs = plt.subplots(1, num_filters, figsize=(20, 3))
     for i in range(num_filters):
-        axs[i].imshow(activations[0, :, :, i], cmap='viridis')
+        axs[i].imshow(activation[0, :, :, i], cmap='viridis')
         axs[i].axis('off')
     st.pyplot(fig)
 
