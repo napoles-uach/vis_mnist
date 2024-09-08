@@ -86,7 +86,7 @@ def show_random_images():
     for i, ax in enumerate(axes.flat):
         # Seleccionar una imagen aleatoria
         random_image = X_train[random_indices[i]]
-        random_label = y_train[random_indices[i]]
+        random_label = random_indices[i]#y_train[random_indices[i]]
         
         # Mostrar la imagen en la cuadrícula
         ax.imshow(random_image, cmap='gray')
