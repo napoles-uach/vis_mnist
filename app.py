@@ -106,3 +106,32 @@ if st.button('Generar nueva muestra aleatoria'):
 else:
     show_random_images()
 
+
+###################33
+# Cargar los datos de MNIST
+(X_train_full, y_train_full), (X_test, y_test) = mnist.load_data()
+
+# Dividir el conjunto de entrenamiento completo en conjunto de entrenamiento y validación
+X_train, X_val, y_train, y_val = train_test_split(X_train_full, y_train_full, test_size=0.2, random_state=42)
+
+# Crear un DataFrame para almacenar las etiquetas y los conjuntos correspondientes
+data = {
+    'Conjunto': ['Entrenamiento'] * len(y_train) + ['Validación'] * len(y_val) + ['Prueba'] * len(y_test),
+    'Dígito': np.concatenate([y_train, y_val, y_test])
+}
+
+df = pd.DataFrame(data)
+
+# Crear la gráfica de barras utilizando Altair
+chart = alt.Chart(df).mark_bar().encode(
+    x=alt.X('Dígito:N', title='Dígito'),
+    y=alt.Y('count()', title='Frecuencia'),
+    color='Conjunto:N',
+    column='Conjunto:N'
+).properties(
+    title='Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba'
+).interactive()
+
+# Mostrar la gráfica en Streamlit
+st.title('Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba')
+st.altair_chart(chart, use_container_width=True)
