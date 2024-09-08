@@ -9,6 +9,7 @@ from sklearn.manifold import TSNE
 from tensorflow.keras.datasets import mnist
 import random
 import pandas as pd
+import matplotlib.plotly as plt
 
 # Título de la app en Streamlit
 st.title('Visualización de t-SNE con imágenes aleatorias del conjunto MNIST')
