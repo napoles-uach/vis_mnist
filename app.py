@@ -132,3 +132,24 @@ fig = px.histogram(df, x='Dígito', color='Conjunto', barmode='group',
 # Mostrar la gráfica en Streamlit
 st.title('Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba')
 st.plotly_chart(fig, use_container_width=True)
+
+
+########################3
+# Calcular el promedio de las imágenes para cada dígito
+mean_images = [np.mean(X_train[y_train == i], axis=0) for i in range(10)]
+
+# Crear una figura para mostrar los mapas de calor
+fig, ax = plt.subplots(2, 5, figsize=(10, 5))
+
+# Mostrar los mapas de calor para las imágenes promedio de cada dígito usando solo Matplotlib
+for i in range(10):
+    ax[i // 5, i % 5].imshow(mean_images[i], cmap='viridis')
+    ax[i // 5, i % 5].set_title(f'Dígito {i}')
+    ax[i // 5, i % 5].axis('off')
+
+# Ajustar el espaciado
+plt.tight_layout()
+
+# Mostrar la figura en Streamlit
+st.title('Mapas de calor de las imágenes promedio por dígito en MNIST')
+st.pyplot(fig)
