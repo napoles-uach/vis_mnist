@@ -20,21 +20,27 @@ layer_selection = st.sidebar.selectbox('Selecciona la capa a visualizar', ['Capa
 x_train = x_train / 255.0
 x_test = x_test / 255.0
 
-# Definir la red neuronal
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28), name="Input"),
-    tf.keras.layers.Dense(128, activation='relu', name="Hidden_Layer_1"),
-    tf.keras.layers.Dense(64, activation='relu', name="Hidden_Layer_2"),
-    tf.keras.layers.Dense(10, activation='softmax', name="Output_Layer")
-])
+@st.cache_resource
+def entrenar_modelo(num_epochs):
+    # Definir la red neuronal
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Flatten(input_shape=(28, 28), name="Input"),
+        tf.keras.layers.Dense(128, activation='relu', name="Hidden_Layer_1"),
+        tf.keras.layers.Dense(64, activation='relu', name="Hidden_Layer_2"),
+        tf.keras.layers.Dense(10, activation='softmax', name="Output_Layer")
+    ])
 
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
+    model.compile(optimizer='adam',
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
 
-# Entrenar el modelo
+    # Entrenar el modelo
+    history = model.fit(x_train, y_train, epochs=num_epochs, verbose=0)
+    return model, history
+
+# Entrenar el modelo solo si cambian los parámetros
 st.write(f"Entrenando el modelo con {num_epochs} épocas...")
-history = model.fit(x_train, y_train, epochs=num_epochs, verbose=0)
+model, history = entrenar_modelo(num_epochs)
 
 # Visualizar la precisión del modelo
 st.header('Precisión del Modelo')
@@ -44,6 +50,9 @@ ax.set_xlabel('Época')
 ax.set_ylabel('Precisión')
 ax.legend()
 st.pyplot(fig)
+
+# Realizar una predicción para asegurarse de que el modelo haya sido llamado
+model.predict(np.expand_dims(x_test[0], axis=0))
 
 # Función para obtener activaciones de capas
 def get_activations(model, layer_name, input_data):
