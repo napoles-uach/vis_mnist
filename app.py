@@ -1,95 +1,22 @@
 import streamlit as st
-import tensorflow as tf
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
+import pandas as pd
 import plotly.express as px
 
-# Cargar el conjunto de datos MNIST
-mnist = tf.keras.datasets.mnist
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# URL del archivo CSV en GitHub (asegúrate de reemplazar esta URL con la tuya)
+url = "https://raw.githubusercontent.com/tu_usuario/tu_repositorio/main/mnist_tsne_results.csv"
 
-st.title('Red Neuronal con Visualización de Capas Internas (MNIST)')
+@st.cache_data
+def load_tsne_data():
+    # Leer el archivo CSV desde GitHub
+    tsne_data = pd.read_csv(url)
+    return tsne_data
 
-# Sidebar para configuración del modelo
-st.sidebar.header('Configuración de la Red Neuronal')
-num_epochs = st.sidebar.slider('Número de épocas', 1, 10, 3)
-layer_selection = st.sidebar.selectbox('Selecciona la capa a visualizar', ['Capa 1', 'Capa 2', 'Capa 3'])
+# Cargar los datos t-SNE desde el archivo CSV
+tsne_data = load_tsne_data()
 
-# Normalizar los datos
-x_train = x_train / 255.0
-x_test = x_test / 255.0
+# Crear la gráfica interactiva con Plotly
+fig = px.scatter(tsne_data, x='X', y='Y', color=tsne_data['label'].astype(str),
+                 labels={'color': 'Dígito'}, title="t-SNE Visualización del conjunto MNIST")
 
-@st.cache_resource
-def entrenar_modelo(num_epochs):
-    # Definir la red neuronal
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28), name="Input"),
-        tf.keras.layers.Dense(128, activation='relu', name="Hidden_Layer_1"),
-        tf.keras.layers.Dense(64, activation='relu', name="Hidden_Layer_2"),
-        tf.keras.layers.Dense(10, activation='softmax', name="Output_Layer")
-    ])
-
-    model.compile(optimizer='adam',
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['accuracy'])
-
-    # Entrenar el modelo
-    history = model.fit(x_train, y_train, epochs=num_epochs, verbose=0)
-    
-    # Crear modelos intermedios para obtener activaciones de capas internas
-    layer_outputs = [layer.output for layer in model.layers]
-    activation_model = tf.keras.models.Model(inputs=model.input, outputs=layer_outputs)
-    
-    return model, activation_model, history
-
-# Entrenar el modelo solo si cambian los parámetros
-st.write(f"Entrenando el modelo con {num_epochs} épocas...")
-model, activation_model, history = entrenar_modelo(num_epochs)
-
-# Visualizar la precisión del modelo
-st.header('Precisión del Modelo')
-fig, ax = plt.subplots()
-ax.plot(history.history['accuracy'], label='Precisión de entrenamiento')
-ax.set_xlabel('Época')
-ax.set_ylabel('Precisión')
-ax.legend()
-st.pyplot(fig)
-
-# Seleccionar imagen para visualizar activaciones
-st.header('Visualización de Activaciones de Capas Internas')
-index = st.sidebar.slider('Selecciona un índice de imagen para ver activaciones', 0, len(x_test)-1, 0)
-selected_image = np.expand_dims(x_test[index], axis=0)
-
-# Función para obtener activaciones de capas
-def get_activations(activation_model, input_data):
-    return activation_model.predict(input_data)
-
-# Mostrar la imagen seleccionada
-st.image(x_test[index], caption=f'Imagen del dígito: {y_test[index]}', width=150)
-
-# Obtener y visualizar las activaciones de la capa seleccionada
-layer_name = "Hidden_Layer_1" if layer_selection == "Capa 1" else ("Hidden_Layer_2" if layer_selection == "Capa 2" else "Output_Layer")
-activations = get_activations(activation_model, selected_image)
-
-# Seleccionar la capa correcta
-layer_index = 1 if layer_selection == "Capa 1" else (2 if layer_selection == "Capa 2" else 3)
-activation = activations[layer_index]
-
-st.write(f"Activaciones de la {layer_selection}")
-if len(activation.shape) == 2:  # Si es una capa densa
-    fig, ax = plt.subplots()
-    sns.heatmap(activation, cmap="viridis", ax=ax)
-    ax.set_title(f"Activaciones de la {layer_selection}")
-    st.pyplot(fig)
-else:  # Para futuras capas convolucionales
-    num_filters = activation.shape[-1]
-    fig, axs = plt.subplots(1, num_filters, figsize=(20, 3))
-    for i in range(num_filters):
-        axs[i].imshow(activation[0, :, :, i], cmap='viridis')
-        axs[i].axis('off')
-    st.pyplot(fig)
-
-# Realizar predicción
-pred = model.predict(selected_image)
-st.write(f"Predicción del modelo: {np.argmax(pred)} (Etiqueta verdadera: {y_test[index]})")
+# Mostrar la gráfica en Streamlit
+st.plotly_chart(fig)
