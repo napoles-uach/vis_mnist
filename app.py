@@ -77,7 +77,7 @@ st.plotly_chart(fig)
 # Función para mostrar la matriz 5x5 de imágenes aleatorias
 def show_random_images():
     # Crear una figura para la matriz 5x5
-    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    fig, axes = plt.subplots(5, 5, figsize=(5,5))
     
     # Muestreo aleatorio de imágenes
     random_indices = np.random.choice(len(X_train), 25, replace=False)
