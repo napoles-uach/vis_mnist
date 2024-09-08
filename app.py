@@ -123,16 +123,12 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Crear la gráfica de barras utilizando Altair
-chart = alt.Chart(df).mark_bar().encode(
-    x=alt.X('Dígito:N', title='Dígito'),
-    y=alt.Y('count()', title='Frecuencia'),
-    color='Conjunto:N',
-    column='Conjunto:N'
-).properties(
-    title='Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba'
-).interactive()
+# Crear la gráfica de barras utilizando Plotly
+fig = px.histogram(df, x='Dígito', color='Conjunto', barmode='group',
+                   title='Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba',
+                   labels={'Dígito': 'Dígito', 'count': 'Frecuencia'},
+                   category_orders={"Conjunto": ["Entrenamiento", "Validación", "Prueba"]})
 
 # Mostrar la gráfica en Streamlit
 st.title('Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba')
-st.altair_chart(chart, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
