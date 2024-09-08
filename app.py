@@ -6,6 +6,7 @@ import base64
 from io import BytesIO
 from matplotlib.figure import Figure
 from sklearn.manifold import TSNE
+from sklearn.model_selection import train_test_split
 from tensorflow.keras.datasets import mnist
 import random
 import pandas as pd
