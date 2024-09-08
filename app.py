@@ -70,9 +70,36 @@ fig.update_layout(showlegend=False)
 # Mostrar la gráfica en Streamlit
 st.plotly_chart(fig)
 
+#############
 
-digit_counts = pd.DataFrame(y_train, columns=["Dígito"]).value_counts().reset_index(name="Frecuencia")
 
-# Visualizar las frecuencias con un gráfico de barras
-fig_freq = px.bar(digit_counts, x="Dígito", y="Frecuencia", title="Frecuencia de cada dígito en MNIST")
-st.plotly_chart(fig_freq)
+# Función para mostrar la matriz 5x5 de imágenes aleatorias
+def show_random_images():
+    # Crear una figura para la matriz 5x5
+    fig, axes = plt.subplots(5, 5, figsize=(10, 10))
+    
+    # Muestreo aleatorio de imágenes
+    random_indices = np.random.choice(len(X_train), 25, replace=False)
+    
+    # Iterar sobre la cuadrícula 5x5 y mostrar las imágenes aleatorias
+    for i, ax in enumerate(axes.flat):
+        # Seleccionar una imagen aleatoria
+        random_image = X_train[random_indices[i]]
+        random_label = y_train[random_indices[i]]
+        
+        # Mostrar la imagen en la cuadrícula
+        ax.imshow(random_image, cmap='gray')
+        ax.set_title(f'Dígito: {random_label}')
+        ax.axis('off')  # Ocultar los ejes
+    
+    # Ajustar el espaciado entre los subgráficos
+    plt.tight_layout()
+    st.pyplot(fig)
+
+# Título de la aplicación
+st.title('Matriz de 5x5 Imágenes de MNIST')
+
+# Botón para actualizar la muestra aleatoria
+if st.button('Generar nueva muestra aleatoria'):
+    show_random_images()
+
