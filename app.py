@@ -103,4 +103,6 @@ st.title('Matriz de 5x5 Imágenes de MNIST')
 # Botón para actualizar la muestra aleatoria
 if st.button('Generar nueva muestra aleatoria'):
     show_random_images()
+else:
+    show_random_images()
 
