@@ -19,9 +19,14 @@ st.title('Visualización de t-SNE con imágenes aleatorias del conjunto MNIST')
 # Aplanar imágenes y normalizarlas para t-SNE
 X_valid_flattened = X_valid.reshape(-1, 28*28) / 255.0
 
-# Cargar los datos de t-SNE desde GitHub (ya calculados)
-url = "https://raw.githubusercontent.com/napoles-uach/vis_mnist/main/mnist_tsne_results.csv"
-tsne_data = pd.read_csv(url)
+@st.cache_data
+def load_tsne_data():
+    url = "https://raw.githubusercontent.com/napoles-uach/vis_mnist/main/mnist_tsne_results.csv"
+    tsne_data = pd.read_csv(url)
+    return tsne_data
+
+# Cargar los datos t-SNE desde GitHub solo una vez
+tsne_data = load_tsne_data()
 
 # Crear gráfico interactivo con Plotly
 fig = px.scatter(tsne_data, x='X', y='Y', color=y_valid.astype(str),
