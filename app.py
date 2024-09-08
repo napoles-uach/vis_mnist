@@ -132,3 +132,10 @@ fig = px.histogram(df, x='Dígito', color='Conjunto', barmode='group',
 # Mostrar la gráfica en Streamlit
 st.title('Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba')
 st.plotly_chart(fig, use_container_width=True)
+# Crear la gráfica de cajas utilizando Plotly
+fig = px.box(df, x='Conjunto', y='Dígito', color='Conjunto',
+             title='Distribución de los dígitos en los conjuntos de entrenamiento, validación y prueba',
+             labels={'Dígito': 'Dígito', 'Conjunto': 'Conjunto'})
+
+# Mostrar la gráfica en Streamlit
+st.plotly_chart(fig, use_container_width=True)
