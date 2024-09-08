@@ -51,18 +51,18 @@ ax.set_ylabel('Precisión')
 ax.legend()
 st.pyplot(fig)
 
-# Realizar una predicción para asegurarse de que el modelo haya sido llamado
-model.predict(np.expand_dims(x_test[0], axis=0))
+# Seleccionar imagen para visualizar activaciones
+st.header('Visualización de Activaciones de Capas Internas')
+index = st.sidebar.slider('Selecciona un índice de imagen para ver activaciones', 0, len(x_test)-1, 0)
+selected_image = np.expand_dims(x_test[index], axis=0)
+
+# Realizar una predicción en la imagen seleccionada (inicializar el modelo)
+_ = model.predict(selected_image)
 
 # Función para obtener activaciones de capas
 def get_activations(model, layer_name, input_data):
     intermediate_layer_model = tf.keras.models.Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
     return intermediate_layer_model.predict(input_data)
-
-# Seleccionar imagen para visualizar activaciones
-st.header('Visualización de Activaciones de Capas Internas')
-index = st.sidebar.slider('Selecciona un índice de imagen para ver activaciones', 0, len(x_test)-1, 0)
-selected_image = np.expand_dims(x_test[index], axis=0)
 
 # Mostrar la imagen seleccionada
 st.image(x_test[index], caption=f'Imagen del dígito: {y_test[index]}', width=150)
