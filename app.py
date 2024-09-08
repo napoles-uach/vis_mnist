@@ -69,3 +69,10 @@ fig.update_layout(showlegend=False)
 
 # Mostrar la gráfica en Streamlit
 st.plotly_chart(fig)
+
+
+digit_counts = pd.DataFrame(y_train, columns=["Dígito"]).value_counts().reset_index(name="Frecuencia")
+
+# Visualizar las frecuencias con un gráfico de barras
+fig_freq = px.bar(digit_counts, x="Dígito", y="Frecuencia", title="Frecuencia de cada dígito en MNIST")
+st.plotly_chart(fig_freq)
